@@ -19,10 +19,22 @@
             width: 100%;
             box-sizing: border-box;
         }
-        .resultados p {
-            background: #f0f0f0;
-            padding: 8px;
-            border-radius: 5px;
+        .resultado {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+        .verde {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .vermelho {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
     </style>
 </head>
@@ -38,14 +50,8 @@
         <button onclick="calcular()">Calcular</button>
     </div>
 
-    <div class="resultados">
-        <h2>Resultados</h2>
-        <p>Precipitação total: <span id="precip">-</span> mm</p>
-        <p>ETo total: <span id="eto">-</span> mm</p>
-        <p>ETa (real): <span id="eta">-</span> mm</p>
-        <p>Escoamento: <span id="runoff">-</span> mm</p>
-        <p>Armazenamento final: <span id="armFinal">-</span> mm</p>
-        <p>Variação: <span id="variacao">-</span> mm</p>
+    <div id="resultadoContainer" class="resultado">
+        <!-- A mensagem será inserida aqui pelo JavaScript -->
     </div>
 
     <script src="script.js"></script>
