@@ -19,7 +19,17 @@
             width: 100%;
             box-sizing: border-box;
         }
-        .resultado {
+        .resultados {
+            margin: 20px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        .resultados p {
+            margin: 5px 0;
+            font-size: 1.1em;
+        }
+        .recomendacao {
             margin-top: 20px;
             padding: 15px;
             border-radius: 8px;
@@ -50,8 +60,12 @@
         <button onclick="calcular()">Calcular</button>
     </div>
 
-    <div id="resultadoContainer" class="resultado">
-        <!-- A mensagem será inserida aqui pelo JavaScript -->
+    <div class="resultados" id="resultadosNumericos">
+        <!-- Preenchido por JS -->
+    </div>
+
+    <div id="recomendacao" class="recomendacao">
+        <!-- Mensagem com fundo colorido -->
     </div>
 
     <script src="script.js"></script>
