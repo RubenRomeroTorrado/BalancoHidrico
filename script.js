@@ -61,7 +61,8 @@ async function calcular() {
 
     const dados = await fetchObservations();
     if (dados.length === 0) {
-        document.getElementById('resultadoContainer').innerHTML = '⚠️ Sem dados para as últimas 24h';
+        document.getElementById('resultadosNumericos').innerHTML = '<p>⚠️ Sem dados para as últimas 24h</p>';
+        document.getElementById('recomendacao').innerHTML = '';
         return;
     }
 
@@ -78,30 +79,35 @@ async function calcular() {
         }
     });
 
-    // Balanço hídrico
+    // Balanço hídrico (apenas para calcular variação)
     let S = s0 + precipTotal;
     if (S > smax) {
-        S = smax;  // ignora escoamento, só interessa armazenamento
+        S = smax;  // ignoramos escoamento para simplificar
     }
     let eta = Math.min(etoTotal, S);
     let Sfinal = S - eta;
     if (Sfinal < 0) Sfinal = 0;
 
-    const variacao = Sfinal - s0;  // pode ser negativa
+    const variacao = Sfinal - s0;
 
-    // Elemento onde vamos mostrar a mensagem
-    const container = document.getElementById('resultadoContainer');
-    container.className = 'resultado';  // remove classes anteriores
+    // Mostrar resultados numéricos
+    document.getElementById('resultadosNumericos').innerHTML = `
+        <p><strong>Precipitação total (24h):</strong> ${precipTotal.toFixed(1)} mm</p>
+        <p><strong>ETo total (24h):</strong> ${etoTotal.toFixed(1)} mm</p>
+        <p><strong>Variação do armazenamento:</strong> ${variacao.toFixed(1)} mm</p>
+    `;
+
+    // Mensagem de recomendação
+    const recomendacaoDiv = document.getElementById('recomendacao');
+    recomendacaoDiv.className = 'recomendacao';  // limpa classes
 
     if (variacao < -0.5) {
-        // Necessário regar
         const aguaNecessaria = Math.abs(variacao).toFixed(1);
-        container.classList.add('vermelho');
-        container.innerHTML = `💧 <strong>Deve regar!</strong><br>Faltam aproximadamente ${aguaNecessaria} mm no solo.`;
+        recomendacaoDiv.classList.add('vermelho');
+        recomendacaoDiv.innerHTML = `💧 <strong>Deve regar!</strong><br>Faltam aproximadamente ${aguaNecessaria} mm no solo.`;
     } else {
-        // Não precisa regar
-        container.classList.add('verde');
-        container.innerHTML = `✅ <strong>Não precisa de regar hoje.</strong><br>O solo tem humidade suficiente.`;
+        recomendacaoDiv.classList.add('verde');
+        recomendacaoDiv.innerHTML = `✅ <strong>Não precisa de regar hoje.</strong><br>O solo tem humidade suficiente.`;
     }
 }
 
