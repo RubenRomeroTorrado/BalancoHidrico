@@ -4,7 +4,27 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Balanço Hídrico - Lisboa</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            max-width: 600px;
+        }
+        .inputs {
+            margin: 20px 0;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .resultados p {
+            background: #f0f0f0;
+            padding: 8px;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
     <h1>💧 Balanço Hídrico (IPMA)</h1>
@@ -22,17 +42,10 @@
         <h2>Resultados</h2>
         <p>Precipitação total: <span id="precip">-</span> mm</p>
         <p>ETo total: <span id="eto">-</span> mm</p>
-        <p>ETa: <span id="eta">-</span> mm</p>
+        <p>ETa (real): <span id="eta">-</span> mm</p>
         <p>Escoamento: <span id="runoff">-</span> mm</p>
         <p>Armazenamento final: <span id="armFinal">-</span> mm</p>
         <p>Variação: <span id="variacao">-</span> mm</p>
-    </div>
-
-    <div class="graficos">
-        <h2>Evolução horária</h2>
-        <canvas id="graficoPrecip"></canvas>
-        <canvas id="graficoTempHum"></canvas>
-        <canvas id="graficoETo"></canvas>
     </div>
 
     <script src="script.js"></script>
