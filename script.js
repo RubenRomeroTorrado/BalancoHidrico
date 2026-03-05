@@ -61,7 +61,7 @@ async function calcular() {
 
     const dados = await fetchObservations();
     if (dados.length === 0) {
-        document.getElementById('resultadosNumericos').innerHTML = '<p>⚠️ Sem dados para as últimas 24h</p>';
+        document.getElementById('resultadosNumericos').innerHTML = '<div class="result-item" style="justify-content:center; padding:20px;">⚠️ Sem dados para as últimas 24h</div>';
         document.getElementById('recomendacao').innerHTML = '';
         return;
     }
@@ -82,7 +82,7 @@ async function calcular() {
     // Balanço hídrico (apenas para calcular variação)
     let S = s0 + precipTotal;
     if (S > smax) {
-        S = smax;  // ignoramos escoamento para simplificar
+        S = smax;
     }
     let eta = Math.min(etoTotal, S);
     let Sfinal = S - eta;
@@ -90,16 +90,25 @@ async function calcular() {
 
     const variacao = Sfinal - s0;
 
-    // Mostrar resultados numéricos
+    // Mostrar resultados numéricos com layout melhorado
     document.getElementById('resultadosNumericos').innerHTML = `
-        <p><strong>Precipitação total (24h):</strong> ${precipTotal.toFixed(1)} mm</p>
-        <p><strong>ETo total (24h):</strong> ${etoTotal.toFixed(1)} mm</p>
-        <p><strong>Variação do armazenamento:</strong> ${variacao.toFixed(1)} mm</p>
+        <div class="result-item">
+            <span class="result-label">🌧️ Precipitação</span>
+            <span class="result-value">${precipTotal.toFixed(1)} mm</span>
+        </div>
+        <div class="result-item">
+            <span class="result-label">☀️ ETo</span>
+            <span class="result-value">${etoTotal.toFixed(1)} mm</span>
+        </div>
+        <div class="result-item">
+            <span class="result-label">📉 Variação do solo</span>
+            <span class="result-value">${variacao.toFixed(1)} mm</span>
+        </div>
     `;
 
     // Mensagem de recomendação
     const recomendacaoDiv = document.getElementById('recomendacao');
-    recomendacaoDiv.className = 'recomendacao';  // limpa classes
+    recomendacaoDiv.className = 'recomendacao';
 
     if (variacao < -0.5) {
         const aguaNecessaria = Math.abs(variacao).toFixed(1);
