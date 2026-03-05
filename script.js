@@ -54,14 +54,14 @@ function hourlyEto(temp_c, rh_percent, wind_ms_10m, press_hPa, rad_kJm2) {
     return Math.max(termoRad + termoAero, 0);
 }
 
-// Função principal (chamada pelo botão)
+// Função principal
 async function calcular() {
     const smax = parseFloat(document.getElementById('smax').value);
     const s0 = parseFloat(document.getElementById('s0').value);
 
     const dados = await fetchObservations();
     if (dados.length === 0) {
-        alert('Sem dados para as últimas 24h');
+        document.getElementById('resultadoContainer').innerHTML = '⚠️ Sem dados para as últimas 24h';
         return;
     }
 
@@ -80,25 +80,29 @@ async function calcular() {
 
     // Balanço hídrico
     let S = s0 + precipTotal;
-    let runoff = 0;
     if (S > smax) {
-        runoff = S - smax;
-        S = smax;
+        S = smax;  // ignora escoamento, só interessa armazenamento
     }
     let eta = Math.min(etoTotal, S);
     let Sfinal = S - eta;
-    if (Sfinal < 0) {
-        Sfinal = 0;
-        eta = S;
-    }
+    if (Sfinal < 0) Sfinal = 0;
 
-    // Atualizar resultados no HTML
-    document.getElementById('precip').innerText = precipTotal.toFixed(1);
-    document.getElementById('eto').innerText = etoTotal.toFixed(1);
-    document.getElementById('eta').innerText = eta.toFixed(1);
-    document.getElementById('runoff').innerText = runoff.toFixed(1);
-    document.getElementById('armFinal').innerText = Sfinal.toFixed(1);
-    document.getElementById('variacao').innerText = (Sfinal - s0).toFixed(1);
+    const variacao = Sfinal - s0;  // pode ser negativa
+
+    // Elemento onde vamos mostrar a mensagem
+    const container = document.getElementById('resultadoContainer');
+    container.className = 'resultado';  // remove classes anteriores
+
+    if (variacao < -0.5) {
+        // Necessário regar
+        const aguaNecessaria = Math.abs(variacao).toFixed(1);
+        container.classList.add('vermelho');
+        container.innerHTML = `💧 <strong>Deve regar!</strong><br>Faltam aproximadamente ${aguaNecessaria} mm no solo.`;
+    } else {
+        // Não precisa regar
+        container.classList.add('verde');
+        container.innerHTML = `✅ <strong>Não precisa de regar hoje.</strong><br>O solo tem humidade suficiente.`;
+    }
 }
 
 // Chamar automaticamente ao carregar a página
