@@ -7,7 +7,6 @@ async function fetchObservations() {
     const resp = await fetch(API_URL);
     const data = await resp.json();
 
-    // A estrutura é { timestamp: { idEstacao: dados, ... } }
     const registos = [];
     for (const [timestamp, estacoes] of Object.entries(data)) {
         if (estacoes[STATION_ID] && estacoes[STATION_ID] !== null) {
@@ -24,19 +23,18 @@ async function fetchObservations() {
         }
     }
 
-    // Filtrar últimas 24h (considerando hora local de Lisboa)
+    // Filtrar últimas 24h (hora local de Lisboa)
     const agora = new Date();
     const limite = new Date(agora.getTime() - 24 * 60 * 60 * 1000);
     
     return registos
-        .map(r => ({ ...r, timestamp: new Date(r.timestamp + ':00') })) // converter para Date
+        .map(r => ({ ...r, timestamp: new Date(r.timestamp + ':00') }))
         .filter(r => r.timestamp >= limite)
         .sort((a, b) => a.timestamp - b.timestamp);
 }
 
-// Função ETo em JavaScript
+// Função ETo simplificada
 function hourlyEto(temp_c, rh_percent, wind_ms_10m, press_hPa, rad_kJm2) {
-    // Se pressão inválida, usar 1013
     if (isNaN(press_hPa) || press_hPa === -99) press_hPa = 1013;
 
     const rad_MJ = rad_kJm2 / 1000;
@@ -44,7 +42,6 @@ function hourlyEto(temp_c, rh_percent, wind_ms_10m, press_hPa, rad_kJm2) {
     const u2 = wind_ms_10m * (4.87 / Math.log(67.8 * 10 - 5.42));
     const P = press_hPa / 10;
     
-    // Pressão de vapor
     const es = 0.6108 * Math.exp(17.27 * temp_c / (temp_c + 237.3));
     const ea = es * (rh_percent / 100);
     
@@ -68,27 +65,16 @@ async function calcular() {
         return;
     }
 
-    // Calcular ETo para cada hora
+    // Calcular totais
     let precipTotal = 0;
     let etoTotal = 0;
-    const horas = [];
 
     dados.forEach(d => {
         precipTotal += d.precip_mm;
-        horas.push({
-            timestamp: d.timestamp,
-            precip: d.precip_mm,
-            temp: d.temp_c,
-            rh: d.rh_percent,
-            eto: 0
-        });
 
-        // Calcular ETo se tiver todas as variáveis
         if (!isNaN(d.temp_c) && !isNaN(d.rh_percent) && !isNaN(d.wind_ms) && !isNaN(d.rad_kJm2)) {
             const eto = hourlyEto(d.temp_c, d.rh_percent, d.wind_ms, d.press_hPa, d.rad_kJm2);
-            d.eto = eto;
             etoTotal += eto;
-            horas[horas.length-1].eto = eto;
         }
     });
 
@@ -113,62 +99,6 @@ async function calcular() {
     document.getElementById('runoff').innerText = runoff.toFixed(1);
     document.getElementById('armFinal').innerText = Sfinal.toFixed(1);
     document.getElementById('variacao').innerText = (Sfinal - s0).toFixed(1);
-
-    // Desenhar gráficos (usando Chart.js)
-    desenharGraficos(horas);
-}
-
-// Gráficos com Chart.js (precisas de incluir a biblioteca no HTML)
-function desenharGraficos(horas) {
-    const labels = horas.map(h => h.timestamp.toLocaleTimeString('pt-PT', {hour: '2-digit', minute:'2-digit'}));
-    const precipData = horas.map(h => h.precip);
-    const tempData = horas.map(h => h.temp);
-    const rhData = horas.map(h => h.rh);
-    const etoData = horas.map(h => h.eto);
-
-    // Gráfico de precipitação
-    new Chart(document.getElementById('graficoPrecip'), {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Precipitação (mm)',
-                data: precipData,
-                backgroundColor: 'blue'
-            }]
-        }
-    });
-
-    // Gráfico temperatura + humidade (eixo duplo)
-    new Chart(document.getElementById('graficoTempHum'), {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [
-                { label: 'Temperatura (°C)', data: tempData, borderColor: 'red', yAxisID: 'y' },
-                { label: 'Humidade (%)', data: rhData, borderColor: 'green', yAxisID: 'y1' }
-            ]
-        },
-        options: {
-            scales: {
-                y: { type: 'linear', position: 'left' },
-                y1: { type: 'linear', position: 'right', min: 0, max: 100 }
-            }
-        }
-    });
-
-    // Gráfico ETo
-    new Chart(document.getElementById('graficoETo'), {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'ETo (mm)',
-                data: etoData,
-                backgroundColor: 'orange'
-            }]
-        }
-    });
 }
 
 // Chamar automaticamente ao carregar a página
