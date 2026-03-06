@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Balanço Hídrico - Morangueiro</title>
+    <title>Balanço Hídrico - Cultivos</title>
     <style>
         * {
             margin: 0;
@@ -85,7 +85,7 @@
             font-weight: 600;
         }
 
-        input {
+        select, input {
             width: 100%;
             padding: 15px;
             border: 2px solid #bae6fd;
@@ -95,7 +95,7 @@
             background: white;
         }
 
-        input:focus {
+        select:focus, input:focus {
             outline: none;
             border-color: #0284c7;
             box-shadow: 0 0 0 4px #bae6fd;
@@ -217,7 +217,7 @@
     <div class="container">
         <h1>
             🌱 Rega Inteligente
-            <span>Morangueiro</span>
+            <span>Selector de cultivo</span>
         </h1>
 
         <div class="estacao">
@@ -225,26 +225,34 @@
         </div>
 
         <div class="input-group">
-            <label>📅 Data de plantação do morangueiro</label>
+            <label>🌿 Selecciona el cultivo</label>
+            <select id="cultivoSelect">
+                <option value="morangueiro">Morangueiro</option>
+                <option value="rucula">Rúcula (ficticio)</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>📅 Fecha de plantación</label>
             <input type="date" id="dataPlantacao" value="2025-03-01">
         </div>
 
         <div class="input-group">
-            <label>💧 Capacidade máxima do solo (mm)</label>
+            <label>💧 Capacidad máxima del suelo (mm)</label>
             <input type="number" id="smax" value="100" step="5">
         </div>
 
         <div class="input-group">
-            <label>💧 Humidade inicial do solo (mm)</label>
+            <label>💧 Humedad inicial del suelo (mm)</label>
             <input type="number" id="s0" value="50" step="5">
         </div>
 
-        <button onclick="calcular()">🔍 Calcular Balanço</button>
+        <button onclick="calcular()">🔍 Calcular Balance</button>
 
         <div id="resultadosContainer" style="display: none;">
             <div class="info-card">
                 <div class="info-row">
-                    <span class="info-label">🌧️ Precipitação (24h)</span>
+                    <span class="info-label">🌧️ Precipitación (24h)</span>
                     <span class="info-value" id="precip">-</span>
                 </div>
                 <div class="info-row">
@@ -260,7 +268,7 @@
                     <span class="info-value" id="etc">-</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">📊 Variação do solo</span>
+                    <span class="info-label">📊 Variación del suelo</span>
                     <span class="info-value" id="variacao">-</span>
                 </div>
             </div>
@@ -269,7 +277,7 @@
         </div>
 
         <div class="footer">
-            <i>Dados IPMA · Atualizado a cada execução</i>
+            <i>Datos IPMA · Actualizado en cada ejecución</i>
         </div>
     </div>
 
