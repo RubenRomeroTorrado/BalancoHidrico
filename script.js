@@ -24,19 +24,20 @@ const cultivos = {
     rucula: {
         nombre: "Rúcula",
         calcularKc: function(dias) {
-            // Ficticio: fases más rápidas
-            if (dias < 0) return 0.5;
-            if (dias <= 15) return 0.5;
+            if (dias < 0) return 0.70;
+            if (dias <= 15) return 0.70;
             if (dias <= 30) {
+                // progressão linear de 0.70 a 1.0 entre 15 e 30 dias
                 const progresso = (dias - 15) / (30 - 15);
-                return 0.5 + progresso * (0.9 - 0.5);
+                return 0.70 + progresso * (1.0 - 0.70);
             }
-            if (dias <= 50) return 0.9;
-            if (dias <= 65) {
-                const progresso = (dias - 50) / (65 - 50);
-                return 0.9 - progresso * (0.9 - 0.7);
+            if (dias <= 50) return 1.0;
+            if (dias <= 60) {
+                // progressão linear de 1.0 a 0.95 entre 50 e 60 dias
+                const progresso = (dias - 50) / (60 - 50);
+                return 1.0 - progresso * (1.0 - 0.95);
             }
-            return 0.7;
+            return 0.95;
         }
     }
 };
