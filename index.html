@@ -2,263 +2,275 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Balanço Hídrico · Lisboa</title>
-    <!-- Fonte moderna -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balanço Hídrico - Morangueiro</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(145deg, #e6f0fa 0%, #b0d0e8 100%);
+            background: linear-gradient(135deg, #0c4a6e, #0284c7);
             min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             padding: 20px;
         }
 
         .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 30px;
             max-width: 500px;
             width: 100%;
-            background: rgba(255,255,255,0.75);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border-radius: 40px;
-            box-shadow: 0 30px 50px rgba(0, 40, 80, 0.25), 0 10px 20px rgba(0,0,0,0.1);
-            padding: 30px 25px;
-            border: 1px solid rgba(255,255,255,0.5);
-            transition: all 0.3s ease;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
         }
 
         h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #0a2a44;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
+            color: #0369a1;
+            font-size: 2em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 3px solid #bae6fd;
+            padding-bottom: 10px;
+        }
+
+        h1 span {
+            background: #0284c7;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.5em;
+        }
+
+        .estacao {
+            background: #e0f2fe;
+            padding: 10px 15px;
+            border-radius: 15px;
+            margin: 15px 0;
+            color: #0369a1;
+            font-weight: 500;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .subhead {
-            font-size: 0.95rem;
-            color: #2b4a6e;
-            margin-bottom: 25px;
-            font-weight: 400;
-            border-left: 4px solid #2a7faa;
-            padding-left: 15px;
-            background: rgba(255,255,255,0.4);
-            border-radius: 0 30px 30px 0;
-        }
-
-        .input-card {
-            background: rgba(255,255,255,0.7);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            border-radius: 28px;
-            padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 8px 20px rgba(0,30,60,0.1);
-            border: 1px solid rgba(255,255,255,0.7);
+        .estacao i {
+            font-size: 1.2em;
         }
 
         .input-group {
-            margin-bottom: 18px;
+            margin: 20px 0;
         }
 
         label {
             display: block;
+            margin-bottom: 8px;
+            color: #0c4a6e;
             font-weight: 600;
-            font-size: 0.9rem;
-            color: #0e3b58;
-            margin-bottom: 6px;
-            letter-spacing: -0.2px;
         }
 
         input {
             width: 100%;
-            padding: 16px 20px;
-            border: none;
+            padding: 15px;
+            border: 2px solid #bae6fd;
+            border-radius: 15px;
+            font-size: 1em;
+            transition: all 0.3s;
             background: white;
-            border-radius: 30px;
-            font-size: 1rem;
-            font-weight: 500;
-            color: #0a2a44;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.03), 0 2px 5px rgba(255,255,255,0.8);
-            transition: all 0.2s;
-            border: 1px solid rgba(42, 127, 170, 0.2);
         }
 
         input:focus {
             outline: none;
-            border-color: #2a7faa;
-            box-shadow: 0 0 0 3px rgba(42,127,170,0.2), inset 0 1px 3px #fff;
+            border-color: #0284c7;
+            box-shadow: 0 0 0 4px #bae6fd;
         }
 
         button {
             width: 100%;
-            background: linear-gradient(135deg, #2a7faa, #1b5e8a);
-            border: none;
             padding: 18px;
-            border-radius: 40px;
-            font-size: 1.2rem;
-            font-weight: 700;
+            background: linear-gradient(135deg, #0284c7, #0369a1);
             color: white;
-            letter-spacing: 0.5px;
-            box-shadow: 0 15px 25px -8px #1b5e8a80, 0 4px 10px rgba(0,30,60,0.2);
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: bold;
             cursor: pointer;
-            transition: transform 0.15s, box-shadow 0.2s;
-            border: 1px solid rgba(255,255,255,0.3);
-            margin-top: 10px;
-        }
-
-        button:active {
-            transform: scale(0.98);
-            box-shadow: 0 8px 15px -5px #1b5e8a;
-        }
-
-        .resultados {
-            background: rgba(255,255,255,0.5);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            border-radius: 32px;
-            padding: 22px;
+            transition: transform 0.2s, box-shadow 0.2s;
             margin: 20px 0;
-            border: 1px solid rgba(255,255,255,0.8);
-            box-shadow: 0 10px 20px rgba(0,30,60,0.1);
+            box-shadow: 0 10px 20px rgba(2, 132, 199, 0.3);
         }
 
-        .result-item {
+        button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 30px rgba(2, 132, 199, 0.4);
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 5px solid #0284c7;
+            transition: all 0.3s;
+        }
+
+        .info-card:hover {
+            transform: translateX(5px);
+        }
+
+        .info-row {
             display: flex;
             justify-content: space-between;
-            align-items: baseline;
-            padding: 12px 0;
-            border-bottom: 1px dashed rgba(42,127,170,0.3);
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px dashed #7dd3fc;
         }
 
-        .result-item:last-child {
+        .info-row:last-child {
             border-bottom: none;
         }
 
-        .result-label {
+        .info-label {
+            color: #0369a1;
             font-weight: 500;
-            color: #13496b;
-            font-size: 1rem;
         }
 
-        .result-value {
-            font-weight: 700;
-            font-size: 1.4rem;
-            color: #0a2a44;
-            background: rgba(255,255,255,0.6);
+        .info-value {
+            background: white;
             padding: 5px 15px;
-            border-radius: 40px;
-            box-shadow: inset 0 1px 4px rgba(0,0,0,0.02);
+            border-radius: 50px;
+            font-weight: 700;
+            color: #0284c7;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .kc-badge {
+            display: inline-block;
+            background: #0284c7;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin-left: 10px;
         }
 
         .recomendacao {
-            border-radius: 40px;
-            padding: 25px 20px;
+            padding: 20px;
+            border-radius: 20px;
             text-align: center;
-            font-size: 1.3rem;
+            font-size: 1.2em;
             font-weight: 600;
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            box-shadow: 0 15px 25px -8px rgba(0,0,0,0.2);
-            border: 1px solid rgba(255,255,255,0.5);
-            transition: all 0.3s ease;
-            animation: slideUp 0.4s ease;
-        }
-
-        .verde {
-            background: linear-gradient(135deg, #c8e6d9, #a6d0c0);
-            color: #0c3b2f;
-        }
-
-        .vermelho {
-            background: linear-gradient(135deg, #ffd6d6, #ffb3b3);
-            color: #7a2e2e;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .emoji-big {
-            font-size: 2rem;
-            margin-right: 8px;
-            vertical-align: middle;
-        }
-
-        .water-icon {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            background: rgba(42,127,170,0.2);
-            border-radius: 50%;
-            text-align: center;
-            line-height: 42px;
-            margin-right: 10px;
-        }
-
-        footer {
             margin-top: 20px;
-            font-size: 0.8rem;
-            color: #2b4a6e;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .recomendacao.verde {
+            background: linear-gradient(135deg, #a7f3d0, #6ee7b7);
+            color: #065f46;
+            border: 2px solid #059669;
+        }
+
+        .recomendacao.vermelho {
+            background: linear-gradient(135deg, #fecaca, #fca5a5);
+            color: #991b1b;
+            border: 2px solid #dc2626;
+        }
+
+        .footer {
             text-align: center;
-            opacity: 0.8;
+            margin-top: 20px;
+            color: #0369a1;
+            font-size: 0.9em;
+        }
+
+        .footer i {
+            font-style: normal;
+            background: #bae6fd;
+            padding: 2px 8px;
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>
-            <span class="water-icon">💧</span> 
-            Balanço Hídrico
+            🌱 Rega Inteligente
+            <span>Morangueiro</span>
         </h1>
-        <div class="subhead">
-            Estação 1210762 · Lisboa · últimas 24h
+
+        <div class="estacao">
+            <i>📍</i> Estação 1210762 - Lisboa (últimas 24h)
         </div>
 
-        <div class="input-card">
-            <div class="input-group">
-                <label>🌱 Capacidade máxima do solo (mm)</label>
-                <input type="number" id="smax" value="100" step="5">
+        <div class="input-group">
+            <label>📅 Data de plantação do morangueiro</label>
+            <input type="date" id="dataPlantacao" value="2025-03-01">
+        </div>
+
+        <div class="input-group">
+            <label>💧 Capacidade máxima do solo (mm)</label>
+            <input type="number" id="smax" value="100" step="5">
+        </div>
+
+        <div class="input-group">
+            <label>💧 Humidade inicial do solo (mm)</label>
+            <input type="number" id="s0" value="50" step="5">
+        </div>
+
+        <button onclick="calcular()">🔍 Calcular Balanço</button>
+
+        <div id="resultadosContainer" style="display: none;">
+            <div class="info-card">
+                <div class="info-row">
+                    <span class="info-label">🌧️ Precipitação (24h)</span>
+                    <span class="info-value" id="precip">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">☀️ ETo (24h)</span>
+                    <span class="info-value" id="eto">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">🌱 Kc (coeficiente cultural)</span>
+                    <span class="info-value" id="kc">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">💚 ETc (ETo × Kc)</span>
+                    <span class="info-value" id="etc">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">📊 Variação do solo</span>
+                    <span class="info-value" id="variacao">-</span>
+                </div>
             </div>
-            <div class="input-group">
-                <label>💧 Humidade inicial (mm)</label>
-                <input type="number" id="s0" value="50" step="5">
-            </div>
-            <button onclick="calcular()">Atualizar previsão</button>
+
+            <div id="recomendacao" class="recomendacao"></div>
         </div>
 
-        <div class="resultados" id="resultadosNumericos">
-            <!-- preenchido por js -->
+        <div class="footer">
+            <i>Dados IPMA · Atualizado a cada execução</i>
         </div>
-
-        <div id="recomendacao" class="recomendacao">
-            <!-- mensagem colorida -->
-        </div>
-
-        <footer>
-            Dados IPMA · atualização horária
-        </footer>
     </div>
 
     <script src="script.js"></script>
