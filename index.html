@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Balanço Hídrico - Cultivos</title>
+    <title>Balanço Hídrico - Culturas</title>
     <style>
         * {
             margin: 0;
@@ -217,42 +217,42 @@
     <div class="container">
         <h1>
             🌱 Rega Inteligente
-            <span>Selector de cultivo</span>
+            <span>Selector de cultura</span>
         </h1>
 
         <div class="estacao">
-            <i>📍</i> Estación 1210762 - Lisboa (últimas 24h)
+            <i>📍</i> Estação 1210762 - Lisboa (últimas 24h)
         </div>
 
         <div class="input-group">
-            <label>🌿 Selecciona el cultivo</label>
-            <select id="cultivoSelect">
+            <label>🌿 Selecciona a cultura</label>
+            <select id="culturaSelect">
                 <option value="morangueiro">Morangueiro</option>
                 <option value="rucula">Rúcula</option>
             </select>
         </div>
 
         <div class="input-group">
-            <label>📅 Fecha de plantación</label>
+            <label>📅 Data de plantação</label>
             <input type="date" id="dataPlantacao" value="2025-03-01">
         </div>
 
         <div class="input-group">
-            <label>💧 Capacidad máxima del suelo (mm)</label>
+            <label>💧 Capacidade máxima do solo (mm)</label>
             <input type="number" id="smax" value="100" step="5">
         </div>
 
         <div class="input-group">
-            <label>💧 Humedad inicial del suelo (mm)</label>
+            <label>💧 Humidade inicial do solo (mm)</label>
             <input type="number" id="s0" value="50" step="5">
         </div>
 
-        <button onclick="calcular()">🔍 Calcular Balance</button>
+        <button onclick="calcular()">🔍 Calcular Balanço</button>
 
         <div id="resultadosContainer" style="display: none;">
             <div class="info-card">
                 <div class="info-row">
-                    <span class="info-label">🌧️ Precipitación (24h)</span>
+                    <span class="info-label">🌧️ Precipitação (24h)</span>
                     <span class="info-value" id="precip">-</span>
                 </div>
                 <div class="info-row">
@@ -268,7 +268,7 @@
                     <span class="info-value" id="etc">-</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">📊 Variación del suelo</span>
+                    <span class="info-label">📊 Variação do solo</span>
                     <span class="info-value" id="variacao">-</span>
                 </div>
             </div>
@@ -277,7 +277,7 @@
         </div>
 
         <div class="footer">
-            <i>Datos IPMA · Actualizado en cada ejecución</i>
+            <i>Dados IPMA · Atualizado a cada execução</i>
         </div>
     </div>
 
