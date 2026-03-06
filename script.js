@@ -2,10 +2,10 @@
 const STATION_ID = "1210762";
 const API_URL = "https://api.ipma.pt/open-data/observation/meteorology/stations/observations.json";
 
-// Definición de cultivos con sus funciones de Kc
-const cultivos = {
+// Definição das culturas com as respetivas funções de Kc
+const culturas = {
     morangueiro: {
-        nombre: "Morangueiro",
+        nome: "Morangueiro",
         calcularKc: function(dias) {
             if (dias < 0) return 0.40;
             if (dias <= 35) return 0.40;
@@ -22,7 +22,7 @@ const cultivos = {
         }
     },
     rucula: {
-        nombre: "Rúcula",
+        nome: "Rúcula",
         calcularKc: function(dias) {
             if (dias < 0) return 0.70;
             if (dias <= 15) return 0.70;
@@ -42,7 +42,7 @@ const cultivos = {
     }
 };
 
-// Función para buscar datos de la API
+// Função para obter dados da API
 async function fetchObservations() {
     const resp = await fetch(API_URL);
     const data = await resp.json();
@@ -73,8 +73,9 @@ async function fetchObservations() {
         .sort((a, b) => a.timestamp - b.timestamp);
 }
 
-// Función ETo simplificada
+// Função ETo simplificada
 function hourlyEto(temp_c, rh_percent, wind_ms_10m, press_hPa, rad_kJm2) {
+    // Se pressão inválida, usar valor padrão ao nível do mar (1013 hPa)
     if (isNaN(press_hPa) || press_hPa === -99) press_hPa = 1013;
 
     const rad_MJ = rad_kJm2 / 1000;
@@ -94,20 +95,20 @@ function hourlyEto(temp_c, rh_percent, wind_ms_10m, press_hPa, rad_kJm2) {
     return Math.max(termoRad + termoAero, 0);
 }
 
-// Función principal
+// Função principal
 async function calcular() {
-    // Obtener cultivo seleccionado
-    const cultivoSelect = document.getElementById('cultivoSelect').value;
-    const cultivo = cultivos[cultivoSelect];
-    if (!cultivo) {
-        alert('Cultivo no válido');
+    // Obter cultura selecionada
+    const culturaSelect = document.getElementById('culturaSelect').value;
+    const cultura = culturas[culturaSelect];
+    if (!cultura) {
+        alert('Cultura não válida');
         return;
     }
 
-    // Obtener fecha de plantación
+    // Obter data de plantação
     const dataPlantacaoStr = document.getElementById('dataPlantacao').value;
     if (!dataPlantacaoStr) {
-        alert('Por favor, introduce la fecha de plantación.');
+        alert('Por favor, introduza a data de plantação.');
         return;
     }
     const dataPlantacao = new Date(dataPlantacaoStr);
@@ -120,11 +121,11 @@ async function calcular() {
 
     const dados = await fetchObservations();
     if (dados.length === 0) {
-        alert('No hay datos para las últimas 24h');
+        alert('Sem dados para as últimas 24h');
         return;
     }
 
-    // Calcular totales de precipitación y ETo
+    // Calcular totais de precipitação e ETo
     let precipTotal = 0;
     let etoTotal = 0;
 
@@ -137,14 +138,14 @@ async function calcular() {
         }
     });
 
-    // Calcular Kc según el cultivo
-    const kc = cultivo.calcularKc(diasDesdePlantacao);
+    // Calcular Kc conforme a cultura
+    const kc = cultura.calcularKc(diasDesdePlantacao);
     const etcTotal = etoTotal * kc;
 
-    // Balance hídrico considerando ETc
+    // Balanço hídrico considerando ETc
     let S = s0 + precipTotal;
     if (S > smax) {
-        S = smax;  // ignoramos escorrentía para simplificar
+        S = smax;  // ignoramos escoamento para simplificar
     }
     let eta = Math.min(etcTotal, S);
     let Sfinal = S - eta;
@@ -152,37 +153,37 @@ async function calcular() {
 
     const variacao = Sfinal - s0;
 
-    // Actualizar elementos en la página
+    // Atualizar elementos na página
     document.getElementById('precip').innerText = precipTotal.toFixed(1) + ' mm';
     document.getElementById('eto').innerText = etoTotal.toFixed(1) + ' mm';
-    document.getElementById('kc').innerHTML = `${kc.toFixed(2)} <span class="kc-badge">${cultivo.nombre} · ${diasDesdePlantacao} días</span>`;
+    document.getElementById('kc').innerHTML = `${kc.toFixed(2)} <span class="kc-badge">${cultura.nome} · ${diasDesdePlantacao} dias</span>`;
     document.getElementById('etc').innerText = etcTotal.toFixed(1) + ' mm';
     document.getElementById('variacao').innerText = variacao.toFixed(1) + ' mm';
 
-    // Mostrar contenedor de resultados
+    // Mostrar container de resultados
     document.getElementById('resultadosContainer').style.display = 'block';
 
-    // Mensaje de recomendación
+    // Mensagem de recomendação
     const recomendacaoDiv = document.getElementById('recomendacao');
-    recomendacaoDiv.className = 'recomendacao';  // limpia clases
+    recomendacaoDiv.className = 'recomendacao';  // limpa classes
 
     if (variacao < -0.5) {
-        const aguaNecesaria = Math.abs(variacao).toFixed(1);
+        const aguaNecessaria = Math.abs(variacao).toFixed(1);
         recomendacaoDiv.classList.add('vermelho');
-        recomendacaoDiv.innerHTML = `💧 <strong>¡Debe regar!</strong><br>Faltan aproximadamente ${aguaNecesaria} mm en el suelo.`;
+        recomendacaoDiv.innerHTML = `💧 <strong>Deve regar!</strong><br>Faltam aproximadamente ${aguaNecessaria} mm no solo.`;
     } else {
         recomendacaoDiv.classList.add('verde');
-        recomendacaoDiv.innerHTML = `✅ <strong>No necesita regar hoy.</strong><br>El suelo tiene humedad suficiente.`;
+        recomendacaoDiv.innerHTML = `✅ <strong>Não precisa de regar hoje.</strong><br>O solo tem humidade suficiente.`;
     }
 }
 
-// Al cargar la página, establecer una fecha por defecto (30 días atrás) y calcular automáticamente
+// Ao carregar a página, definir uma data padrão (30 dias atrás) e calcular automaticamente
 window.onload = function() {
     const hoje = new Date();
     const trintaDiasAtras = new Date(hoje);
     trintaDiasAtras.setDate(hoje.getDate() - 30);
     document.getElementById('dataPlantacao').value = trintaDiasAtras.toISOString().split('T')[0];
     
-    // Calcular automáticamente (opcional)
+    // Calcular automaticamente (opcional)
     calcular();
 };
