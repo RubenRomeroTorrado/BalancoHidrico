@@ -2,7 +2,28 @@
 const STATION_ID = "1210762";
 const API_URL = "https://api.ipma.pt/open-data/observation/meteorology/stations/observations.json";
 
-// Função para buscar dados
+// Função para calcular Kc do morangueiro com base nos dias desde a plantação
+function calcularKc(diasDesdePlantacao) {
+    if (diasDesdePlantacao < 0) return 0.40; // data futura? assume inicial
+
+    if (diasDesdePlantacao <= 35) {
+        return 0.40;
+    } else if (diasDesdePlantacao <= 80) {
+        // Interpolação linear entre 35 e 80: de 0.40 a 0.85
+        const progresso = (diasDesdePlantacao - 35) / (80 - 35);
+        return 0.40 + progresso * (0.85 - 0.40);
+    } else if (diasDesdePlantacao <= 220) {
+        return 0.85;
+    } else if (diasDesdePlantacao <= 250) {
+        // Interpolação linear entre 220 e 250: de 0.85 a 0.75
+        const progresso = (diasDesdePlantacao - 220) / (250 - 220);
+        return 0.85 - progresso * (0.85 - 0.75);
+    } else {
+        return 0.75;
+    }
+}
+
+// Função para buscar dados da API
 async function fetchObservations() {
     const resp = await fetch(API_URL);
     const data = await resp.json();
@@ -56,17 +77,28 @@ function hourlyEto(temp_c, rh_percent, wind_ms_10m, press_hPa, rad_kJm2) {
 
 // Função principal
 async function calcular() {
+    // Obter valores dos inputs
+    const dataPlantacaoStr = document.getElementById('dataPlantacao').value;
+    if (!dataPlantacaoStr) {
+        alert('Por favor, insira a data de plantação.');
+        return;
+    }
+    const dataPlantacao = new Date(dataPlantacaoStr);
+    const hoje = new Date();
+    // Calcular diferença em dias (ignorando horas)
+    const diffTempo = hoje - dataPlantacao;
+    const diasDesdePlantacao = Math.floor(diffTempo / (1000 * 60 * 60 * 24));
+
     const smax = parseFloat(document.getElementById('smax').value);
     const s0 = parseFloat(document.getElementById('s0').value);
 
     const dados = await fetchObservations();
     if (dados.length === 0) {
-        document.getElementById('resultadosNumericos').innerHTML = '<div class="result-item" style="justify-content:center; padding:20px;">⚠️ Sem dados para as últimas 24h</div>';
-        document.getElementById('recomendacao').innerHTML = '';
+        alert('Sem dados para as últimas 24h');
         return;
     }
 
-    // Calcular totais
+    // Calcular totais de precipitação e ETo
     let precipTotal = 0;
     let etoTotal = 0;
 
@@ -79,36 +111,34 @@ async function calcular() {
         }
     });
 
-    // Balanço hídrico (apenas para calcular variação)
+    // Calcular Kc
+    const kc = calcularKc(diasDesdePlantacao);
+    const etcTotal = etoTotal * kc;
+
+    // Balanço hídrico considerando ETc
     let S = s0 + precipTotal;
     if (S > smax) {
-        S = smax;
+        S = smax;  // ignoramos escoamento para simplificar
     }
-    let eta = Math.min(etoTotal, S);
+    let eta = Math.min(etcTotal, S);  // evapotranspiração real da cultura
     let Sfinal = S - eta;
     if (Sfinal < 0) Sfinal = 0;
 
     const variacao = Sfinal - s0;
 
-    // Mostrar resultados numéricos com layout melhorado
-    document.getElementById('resultadosNumericos').innerHTML = `
-        <div class="result-item">
-            <span class="result-label">🌧️ Precipitação</span>
-            <span class="result-value">${precipTotal.toFixed(1)} mm</span>
-        </div>
-        <div class="result-item">
-            <span class="result-label">☀️ ETo</span>
-            <span class="result-value">${etoTotal.toFixed(1)} mm</span>
-        </div>
-        <div class="result-item">
-            <span class="result-label">📉 Variação do solo</span>
-            <span class="result-value">${variacao.toFixed(1)} mm</span>
-        </div>
-    `;
+    // Atualizar elementos na página
+    document.getElementById('precip').innerText = precipTotal.toFixed(1) + ' mm';
+    document.getElementById('eto').innerText = etoTotal.toFixed(1) + ' mm';
+    document.getElementById('kc').innerHTML = `${kc.toFixed(2)} <span class="kc-badge">${diasDesdePlantacao} dias</span>`;
+    document.getElementById('etc').innerText = etcTotal.toFixed(1) + ' mm';
+    document.getElementById('variacao').innerText = variacao.toFixed(1) + ' mm';
+
+    // Mostrar container de resultados
+    document.getElementById('resultadosContainer').style.display = 'block';
 
     // Mensagem de recomendação
     const recomendacaoDiv = document.getElementById('recomendacao');
-    recomendacaoDiv.className = 'recomendacao';
+    recomendacaoDiv.className = 'recomendacao';  // limpa classes
 
     if (variacao < -0.5) {
         const aguaNecessaria = Math.abs(variacao).toFixed(1);
@@ -120,5 +150,14 @@ async function calcular() {
     }
 }
 
-// Chamar automaticamente ao carregar a página
-window.onload = calcular;
+// Chamar automaticamente ao carregar a página (opcional)
+window.onload = function() {
+    // Definir data padrão como 30 dias atrás para teste
+    const hoje = new Date();
+    const trintaDiasAtras = new Date(hoje);
+    trintaDiasAtras.setDate(hoje.getDate() - 30);
+    document.getElementById('dataPlantacao').value = trintaDiasAtras.toISOString().split('T')[0];
+    
+    // Calcular automaticamente (opcional)
+    calcular();
+};
