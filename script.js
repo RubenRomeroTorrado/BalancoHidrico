@@ -2,6 +2,12 @@
 const STATION_ID = "1210762";
 const API_URL = "https://api.ipma.pt/open-data/observation/meteorology/stations/observations.json";
 
+// Eficiência dos métodos de rega
+const eficienciaMetodo = {
+    gota: 0.95,
+    balde: 0.50
+};
+
 // Definição das culturas com as respetivas funções de Kc
 const culturas = {
     morangueiro: {
@@ -120,6 +126,14 @@ async function calcular() {
         return;
     }
 
+    // Obter método de rega selecionado
+    const metodoSelect = document.getElementById('metodoRega').value;
+    const eficiencia = eficienciaMetodo[metodoSelect];
+    if (eficiencia === undefined) {
+        alert('Método de rega não válido');
+        return;
+    }
+
     // Obter data de plantação
     const dataPlantacaoStr = document.getElementById('dataPlantacao').value;
     if (!dataPlantacaoStr) {
@@ -130,15 +144,6 @@ async function calcular() {
     const hoje = new Date();
     const diffTempo = hoje - dataPlantacao;
     const diasDesdePlantacao = Math.floor(diffTempo / (1000 * 60 * 60 * 24));
-
-    // Obter método de rega e eficiência
-    const metodoRega = document.querySelector('input[name="metodoRega"]:checked').value;
-    let eficiencia;
-    if (metodoRega === 'balde') {
-        eficiencia = 0.95;
-    } else { // gota
-        eficiencia = 0.5;
-    }
 
     const smax = parseFloat(document.getElementById('smax').value);
     const s0 = parseFloat(document.getElementById('s0').value);
@@ -187,15 +192,17 @@ async function calcular() {
     // Mostrar container de resultados
     document.getElementById('resultadosContainer').style.display = 'block';
 
-    // Mensagem de recomendação
+    // Mensagem de recomendação com dotação real (considerando eficiência)
     const recomendacaoDiv = document.getElementById('recomendacao');
     recomendacaoDiv.className = 'recomendacao';  // limpa classes
 
     if (variacao < -0.5) {
-        // Água necessária corrigida pela eficiência
-        const aguaNecessaria = Math.abs(variacao) / eficiencia;
+        const aguaNecessaria = Math.abs(variacao);  // mm que faltam no solo
+        const dotacaoReal = aguaNecessaria / eficiencia;  // mm a aplicar considerando eficiência
         recomendacaoDiv.classList.add('vermelho');
-        recomendacaoDiv.innerHTML = `💧 <strong>Deve regar!</strong><br>Faltam aproximadamente ${aguaNecessaria.toFixed(1)} mm no solo (considerando eficiência de ${(eficiencia*100).toFixed(0)}%).`;
+        recomendacaoDiv.innerHTML = `💧 <strong>Deve regar!</strong><br>` +
+            `Faltam ${aguaNecessaria.toFixed(1)} mm no solo.<br>` +
+            `Com o método escolhido, aplicar aproximadamente <strong>${dotacaoReal.toFixed(1)} mm</strong>.`;
     } else {
         recomendacaoDiv.classList.add('verde');
         recomendacaoDiv.innerHTML = `✅ <strong>Não precisa de regar hoje.</strong><br>O solo tem humidade suficiente.`;
