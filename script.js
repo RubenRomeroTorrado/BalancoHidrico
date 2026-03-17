@@ -131,6 +131,15 @@ async function calcular() {
     const diffTempo = hoje - dataPlantacao;
     const diasDesdePlantacao = Math.floor(diffTempo / (1000 * 60 * 60 * 24));
 
+    // Obter método de rega e eficiência
+    const metodoRega = document.querySelector('input[name="metodoRega"]:checked').value;
+    let eficiencia;
+    if (metodoRega === 'balde') {
+        eficiencia = 0.95;
+    } else { // gota
+        eficiencia = 0.5;
+    }
+
     const smax = parseFloat(document.getElementById('smax').value);
     const s0 = parseFloat(document.getElementById('s0').value);
 
@@ -183,9 +192,10 @@ async function calcular() {
     recomendacaoDiv.className = 'recomendacao';  // limpa classes
 
     if (variacao < -0.5) {
-        const aguaNecessaria = Math.abs(variacao).toFixed(1);
+        // Água necessária corrigida pela eficiência
+        const aguaNecessaria = Math.abs(variacao) / eficiencia;
         recomendacaoDiv.classList.add('vermelho');
-        recomendacaoDiv.innerHTML = `💧 <strong>Deve regar!</strong><br>Faltam aproximadamente ${aguaNecessaria} mm no solo.`;
+        recomendacaoDiv.innerHTML = `💧 <strong>Deve regar!</strong><br>Faltam aproximadamente ${aguaNecessaria.toFixed(1)} mm no solo (considerando eficiência de ${(eficiencia*100).toFixed(0)}%).`;
     } else {
         recomendacaoDiv.classList.add('verde');
         recomendacaoDiv.innerHTML = `✅ <strong>Não precisa de regar hoje.</strong><br>O solo tem humidade suficiente.`;
