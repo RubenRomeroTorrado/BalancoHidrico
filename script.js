@@ -60,6 +60,28 @@ const culturas = {
             }
             return 0.75;
         }
+    },
+    tomateiro: {
+        nome: "Tomateiro",
+        calcularKc: function(dias) {
+            // Valores baseados na Tabela 12 da FAO 56 (tomate para processamento)
+            // Fase Inicial (0-30 dias): Kc = 0.60
+            // Fase de Desenvolvimento (30-40 dias): Kc 0.60 -> 1.15
+            // Fase Média (40-80 dias): Kc = 1.15
+            // Fase Final (80-90 dias): Kc 1.15 -> 0.80
+            if (dias < 0) return 0.60;
+            if (dias <= 30) return 0.60;
+            if (dias <= 40) {
+                const progresso = (dias - 30) / (40 - 30);
+                return 0.60 + progresso * (1.15 - 0.60);
+            }
+            if (dias <= 80) return 1.15;
+            if (dias <= 90) {
+                const progresso = (dias - 80) / (90 - 80);
+                return 1.15 - progresso * (1.15 - 0.80);
+            }
+            return 0.80;
+        }
     }
 };
 
@@ -94,7 +116,7 @@ async function fetchObservations() {
         .sort((a, b) => a.timestamp - b.timestamp);
 }
 
-// Função ETo simplificada
+// Função ETo simplificada (Penman-Monteith FAO)
 function hourlyEto(temp_c, rh_percent, wind_ms_10m, press_hPa, rad_kJm2) {
     // Se pressão inválida, usar valor padrão ao nível do mar (1013 hPa)
     if (isNaN(press_hPa) || press_hPa === -99) press_hPa = 1013;
@@ -194,11 +216,11 @@ async function calcular() {
 
     // Mensagem de recomendação com dotação real (considerando eficiência)
     const recomendacaoDiv = document.getElementById('recomendacao');
-    recomendacaoDiv.className = 'recomendacao';  // limpa classes
+    recomendacaoDiv.className = 'recomendacao';
 
     if (variacao < -0.5) {
-        const aguaNecessaria = Math.abs(variacao);  // mm que faltam no solo
-        const dotacaoReal = aguaNecessaria / eficiencia;  // mm a aplicar considerando eficiência
+        const aguaNecessaria = Math.abs(variacao);
+        const dotacaoReal = aguaNecessaria / eficiencia;
         recomendacaoDiv.classList.add('vermelho');
         recomendacaoDiv.innerHTML = `💧 <strong>Deve regar!</strong><br>` +
             `Faltam ${aguaNecessaria.toFixed(1)} mm no solo.<br>` +
@@ -216,6 +238,6 @@ window.onload = function() {
     trintaDiasAtras.setDate(hoje.getDate() - 30);
     document.getElementById('dataPlantacao').value = trintaDiasAtras.toISOString().split('T')[0];
     
-    // Calcular automaticamente (opcional)
+    // Calcular automaticamente
     calcular();
 };
